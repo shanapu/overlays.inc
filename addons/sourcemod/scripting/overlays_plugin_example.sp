@@ -13,15 +13,6 @@
 //use a define or if needed (for cvars) a string
 #define OVERLAYPATH "overlays/test"   //Path to the overlay relative to materials/.. - no need for extentions like .vmt or .vft
 
-//Info
-public Plugin myinfo = {
-	name = "Overlays Example Plugin", 
-	author = "shanapu", 
-	description = "A example plugin for overlays include file", 
-	version = "1.0", 
-	url = "https://github.com/shanapu/-INC-Overlays"
-};
-
 
 //Start
 public void OnPluginStart()
