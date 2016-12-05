@@ -1,0 +1,18 @@
+language: c
+
+env:
+    - SMVERSION=1.7
+    - SMVERSION=1.8
+    - SMVERSION=1.9
+    
+install:
+    - wget --input-file=http://sourcemod.net/smdrop/$SMVERSION/sourcemod-latest-linux
+    - tar -xzf $(cat sourcemod-latest-linux)
+before_script:
+    - cd addons/sourcemod/scripting/
+    - chmod +x spcomp
+script: ./compile.sh ./scripting/overlays_plugin_example.sp
+
+#Notifications
+notifications:
+    email: false
