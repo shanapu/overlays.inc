@@ -1,0 +1,217 @@
+[QUOTE=shanapu;2456153]... don't ask my why - [B][U]I love overlays[/U][/B].[/QUOTE]
+
+I use this stock functions successful in many of my plugins as part of [URL="https://github.com/shanapu/MyJailbreak/blob/master/addons/sourcemod/scripting/include/mystocks.inc"]mystocks.inc[/URL]
+An easy way to use overlays for plugin developers. I also added a small tut how to make your own overlays. 
+
+Used code & a example overlays from here: [url]https://forums.alliedmods.net/showthread.php?t=231473[/url]
+
+Any ideas to improve this code or tutorial are welcome!
+
+first a plugin example (overlays_plugin_example.sp):
+[SPOILER][PHP]
+//Includes
+#include <sourcemod>
+#include <sdktools>   //need for adding files to download table
+
+#include <overlays>
+
+
+//Compiler Options   //Optional, but please keep your code clean!
+#pragma semicolon 1
+#pragma newdecls required
+
+
+//use a define or if needed (for cvars) a string
+#define OVERLAYPATH "overlays/test"   //Path to the overlay relative to materials/.. - no need for extentions like .vmt or .vft
+
+
+//Start
+public void OnPluginStart()
+{
+	RegConsoleCmd("sm_testoverlay", Command_TestOverlay, "Show overlay to client");
+	RegConsoleCmd("sm_testoverlayall", Command_TestOverlayAll, "Show overlay to all clients for 5 seconds");
+	RegConsoleCmd("sm_testremoveoverlay", Command_TestRemoveOverlay, "Remove overlay of all clients");
+}
+
+
+//MapStart
+public void OnMapStart()
+{
+	PrecacheDecalAnyDownload(OVERLAYPATH);   //Stock for adding overlay to download table and precaching.
+}
+
+
+//Show overlay to client
+public Action Command_TestOverlay(int client, int args)
+{
+	ShowOverlay(client, OVERLAYPATH, 0.0);   //Show the overlay to the client - 0.0 as lifetime will show the overlay constant.
+
+	return Plugin_Handled;
+}
+
+
+//Show overlay to all clients
+public Action Command_TestOverlayAll(int client, int args)
+{
+	ShowOverlayAll(OVERLAYPATH, 5.0);   //Show the overlay to the all clients - 5.0 as lifetime will delete the overlay after 5 seconds.
+
+	return Plugin_Handled;
+}
+
+
+//Show overlay to client
+public Action Command_TestRemoveOverlay(int client, int args)
+{
+	for (int i = 1; i <= MaxClients; i++)   //Loop through all clients. Client validation in stock function
+	{
+		CreateTimer(0.0, DeleteOverlay, i);   //We use a timer to remove the overlay.
+	}
+
+	return Plugin_Handled;
+}
+[/PHP][/SPOILER]
+
+the include file (overlays.inc):
+[SPOILER][PHP]
+#if defined _overlays_included_
+	#endinput
+#endif
+#define _overlays_included_
+
+// Precache & prepare download for overlays & decals
+stock void PrecacheDecalAnyDownload(char[] sOverlay)
+{
+	char sBuffer[256];
+	Format(sBuffer, sizeof(sBuffer), "%s.vmt", sOverlay);
+	PrecacheDecal(sBuffer, true);
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vmt", sOverlay);
+	AddFileToDownloadsTable(sBuffer);
+
+	Format(sBuffer, sizeof(sBuffer), "%s.vtf", sOverlay);
+	PrecacheDecal(sBuffer, true);
+	Format(sBuffer, sizeof(sBuffer), "materials/%s.vtf", sOverlay);
+	AddFileToDownloadsTable(sBuffer);
+}
+
+// Show overlay to a client with lifetime | 0.0 = no auto remove
+stock void ShowOverlay(int client, char[] path, float lifetime)
+{
+	if (!IsClientInGame(client) || IsFakeClient(client) || IsClientSourceTV(client) || IsClientReplay(client))
+		return;
+
+	int iFlag = GetCommandFlags("r_screenoverlay") & (~FCVAR_CHEAT);
+	SetCommandFlags("r_screenoverlay", iFlag);
+	ClientCommand(client, "r_screenoverlay \"%s.vtf\"", path);
+
+	if (lifetime != 0.0)
+		CreateTimer(lifetime, DeleteOverlay, client);
+}
+
+// Show overlay to all clients with lifetime | 0.0 = no auto remove
+stock void ShowOverlayAll(char[] path, float lifetime)
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (!IsClientInGame(i) || IsFakeClient(i) || IsClientSourceTV(i) || IsClientReplay(i))
+			continue;
+
+		int iFlag = GetCommandFlags("r_screenoverlay") & (~FCVAR_CHEAT);
+		SetCommandFlags("r_screenoverlay", iFlag);
+		ClientCommand(i, "r_screenoverlay \"%s.vtf\"", path);
+
+		if (lifetime != 0.0)
+			CreateTimer(lifetime, DeleteOverlay, i);
+	}
+}
+
+// Remove overlay from a client - Timer!
+stock Action DeleteOverlay(Handle timer, any client) 
+{
+	if (!IsClientInGame(client) || IsFakeClient(client) || IsClientSourceTV(client) || IsClientReplay(client))
+		return;
+
+	int iFlag = GetCommandFlags("r_screenoverlay") & (~FCVAR_CHEAT);
+	SetCommandFlags("r_screenoverlay", iFlag);
+	ClientCommand(client, "r_screenoverlay \"\"");
+}
+[/PHP][/SPOILER]
+
+Tutorial: 
+[SPOILER]
+In this tutorial, I try so "noob-like" as I can, to show you how to make custom overlays.
+
+You need a windows PC, VTFEdit, an graphic editor like Photoshop or GIMP (For this tutorial I presume you know how to use a graphic software) & an text editor like SPEdit, Sublime Text or Notepad++.
+[LIST=1]
+[*]Design a new image with your graphic editor with the following size: [B]1820px * 1024px (optimal view at 16:9)[/B]
+[IMG]https://camo.githubusercontent.com/eac8004e5cb8f8839c68b00a932f392b663745e8/687474703a2f2f7368616e6170752e64652f6d796a622f6f7665726c6179312e6a7067[/IMG]
+
+
+[*]Squeeze it to a 1024px * 1024px square.
+[IMG]https://camo.githubusercontent.com/242c0d3986d5718ceb3148799d4166b5e2db4d8a/687474703a2f2f7368616e6170752e64652f6d796a622f6f7665726c6179322e6a7067[/IMG]
+
+
+[*]Save your image as a RGB/8bit *.png file. In this example as overlay.png
+
+
+[*]Open VTFEdit and press the Import Button or 'Ctrl + I'
+
+
+[*]Import your custom image from step 3
+
+
+[*]A option windows pops up. I run good with these settings:
+
+
+[IMG]https://camo.githubusercontent.com/2035aaef8276031a0b53176c4810897fdb5516a4/687474703a2f2f7368616e6170752e64652f6d796a622f565446456469742e6a7067[/IMG]
+
+
+[*]Press OK & check the following settings. I run good with these:
+[IMG]https://camo.githubusercontent.com/4570fea8e57207b49cda17830c28e34fbc5037a0/687474703a2f2f7368616e6170752e64652f6d796a622f56544645646974322e6a7067[/IMG]
+
+
+[*]Save as *.vtf file. In this example as overlay.vtf
+
+
+[*]Open your text editor and start a new file (Ctrl + N)
+
+
+[*]Copy & Paste the following to your new text file:
+[CODE]
+MonitorScreen"
+{
+	"$basetexture" "overlays/MyFirstOverlay/OVERLAY_PLACEHOLDER"
+	"$translucent" 1
+}
+[/CODE]
+
+
+[*]Edit OVERLAY_PLACEHOLDER to your filename you choose in step 8. Don't write the file extension.vft
+
+
+[*]example with overlay.vtf:
+[CODE]"MonitorScreen"
+{
+	"$basetexture" "overlays/MyFirstOverlay/overlay"
+	"$translucent" 1
+}[/CODE]
+
+
+[*]Save as *.vmt file with same name you choose in step 8. In this example as overlay.vmt
+
+
+[*]Upload the *.vtf & *.vmt file to following folder of your server & FastDL:
+
+Overlay: ...\csgo\materials\overlays\MyFirstOverlay
+
+Congratulations!
+[/LIST]
+
+Tutorial take from [URL="https://github.com/shanapu/MyJailbreak/wiki/Custom-Overlays"]here[/URL]
+[/SPOILER]
+
+I hope I can help someone with it.
+
+[url]https://github.com/shanapu/overlays.inc[/url]
+
+
+[SIZE="1"]you like my work?[/SIZE] [URL="https://www.paypal.me/shanapu"] [IMG]https://www.paypalobjects.com/webstatic/en_US/i/btn/png/silver-rect-paypal-26px.png[/IMG][/URL]

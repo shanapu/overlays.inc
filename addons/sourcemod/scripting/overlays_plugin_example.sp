@@ -1,5 +1,5 @@
 /*
- * Overlays - Include File.
+ * Overlays - Example File.
  * by: shanapu
  * https://github.com/shanapu/overlays.inc
  * 
