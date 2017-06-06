@@ -75,7 +75,7 @@ public Action Command_TestRemoveOverlay(int client, int args)
 {
 	for (int i = 1; i <= MaxClients; i++)   //Loop through all clients. Client validation in stock function
 	{
-		CreateTimer(0.0, DeleteOverlay, i);   //We use a timer to remove the overlay.
+		CreateTimer(0.0, DeleteOverlay, GetClientUserId(i));   //We use a timer to remove the overlay.
 	}
 
 	return Plugin_Handled;
