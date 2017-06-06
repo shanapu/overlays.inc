@@ -1,7 +1,5 @@
 [INC] Overlays
 
-[![Build Status](https://img.shields.io/travis/shanapu/overlays.inc/master.svg?style=flat-square)](https://travis-ci.org/shanapu/overlays.inc?branch=master)
-
 there are three stock functions and a timer:
 
 ##### Precache & prepare download for overlays & decals
