@@ -1,4 +1,7 @@
-language: c
+sudo: false
+addons:
+    apt_packages:
+        - lib32stdc++6
 
 env:
     - SMVERSION=1.7
@@ -6,8 +9,9 @@ env:
     - SMVERSION=1.9
     
 install:
-    - wget --input-file=http://sourcemod.net/smdrop/$SMVERSION/sourcemod-latest-linux
-    - tar -xzf $(cat sourcemod-latest-linux)
+    - mkdir build && cd build
+    - wget "http://www.sourcemod.net/latest.php?version=$SMVERSION&os=linux" -O sourcemod-$SMVERSION-linux.tar.gz
+    - tar -xzf sourcemod-$SMVERSION-linux.tar.gz
 before_script:
     - cd addons/sourcemod/scripting/
     - chmod +x spcomp
