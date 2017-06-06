@@ -72,9 +72,10 @@ stock void ShowOverlayAll(char[] path, float lifetime)
 }
 
 // Remove overlay from a client - Timer!
-stock Action DeleteOverlay(Handle timer, any client) 
+stock Action DeleteOverlay(Handle timer, any userid) 
 {
-	if (!IsClientInGame(client) || IsFakeClient(client) || IsClientSourceTV(client) || IsClientReplay(client))
+	int client = GetClientOfUserId(userid);
+	if (client <= 0 || !IsClientInGame(client) || IsFakeClient(client) || IsClientSourceTV(client) || IsClientReplay(client))
 		return;
 
 	int iFlag = GetCommandFlags("r_screenoverlay") & (~FCVAR_CHEAT);
