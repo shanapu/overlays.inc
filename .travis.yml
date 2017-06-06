@@ -13,7 +13,7 @@ install:
     - wget "http://www.sourcemod.net/latest.php?version=$SMVERSION&os=linux" -O sourcemod-$SMVERSION-linux.tar.gz
     - tar -xzf sourcemod-$SMVERSION-linux.tar.gz
 before_script:
-    - cd addons/sourcemod/scripting/
+    - cd build/addons/sourcemod/scripting/
     - chmod +x spcomp
 script: ./compile.sh overlays_plugin_example.sp
 
