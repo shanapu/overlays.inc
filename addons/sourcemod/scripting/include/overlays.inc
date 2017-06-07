@@ -51,7 +51,7 @@ stock void ShowOverlay(int client, char[] path, float lifetime)
 	ClientCommand(client, "r_screenoverlay \"%s.vtf\"", path);
 
 	if (lifetime != 0.0)
-		CreateTimer(lifetime, DeleteOverlay, GetClientOfUserId(client));
+		CreateTimer(lifetime, DeleteOverlay, GetClientUserId(client));
 }
 
 // Show overlay to all clients with lifetime | 0.0 = no auto remove
@@ -67,7 +67,7 @@ stock void ShowOverlayAll(char[] path, float lifetime)
 		ClientCommand(i, "r_screenoverlay \"%s.vtf\"", path);
 
 		if (lifetime != 0.0)
-			CreateTimer(lifetime, DeleteOverlay, GetClientOfUserId(i));
+			CreateTimer(lifetime, DeleteOverlay, GetClientUserId(i));
 	}
 }
 
