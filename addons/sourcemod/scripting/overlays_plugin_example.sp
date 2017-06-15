@@ -3,7 +3,7 @@
  * by: shanapu
  * https://github.com/shanapu/overlays.inc
  * 
- * Version: 1.1
+ * Version: 1.2
  * 
  * Copyright (C) 2017 Thomas Schmidt (shanapu)
  *
